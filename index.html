@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Time Vehicle Tracking System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+    <style>
+        #map{
+            position : fixed;
+            top : 0;
+            left : 0;
+            width : 100%;
+            height : 100%;
+            z-index: -1;
+        }
+        html, body{
+            margin : 0;
+            padding : 0;
+            overflow: hidden;
+        }
+    </style>
+    <script>
+        let map;
+
+        function initMap(){
+            const mapOptions = {
+                center: { lat: 40.7128, lng: -74.0060 },
+                zoom: 10,
+                disableDefaultUI: true,
+                styles: [
+                    {
+                        elementType: "geometry",
+                        stylers: [{ color: "#242f3e" }],
+                    },
+                    {
+                        elementType: "labels.text.stroke",
+                        stylers: [{ color: "#242f3e" }],
+                    },
+                    {
+                        elementType: "labels.text.fill",
+                        stylers: [{ color: "#746855" }],
+                    },
+                    {
+                        featureType: "road",
+                        elementType: "geometry",
+                        stylers: [{ color: "#ffcc00" }],
+                    },
+                ]
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="map-container" class="container">
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+            <div class="bus-icon">
+                <img src="bus-icon.png" alt="Bus Icon">
+            </div>
+            <div class="line-under-search-bar"></div>
+        </div>
+        <div class="options">
+            <div class="option">Home</div>
+            <div class="option">Chadwick Falls</div>
+            <div class="option">Manali</div>
+            <div class="option">South Himachal</div>
+        </div>
+    </div>
+</body>
+</html>

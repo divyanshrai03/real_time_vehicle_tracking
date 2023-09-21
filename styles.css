@@ -1,0 +1,76 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #F1F3F8;
+    background-color: #2E2B2B;
+}
+
+.container {
+    width: 430px;
+    height: 300px;
+    position: absolute;
+    top: 23px;
+    left: 31px;
+    border-radius: 20px;
+    border: 1px solid #2E2B2B;
+    background: linear-gradient(0deg, #2E2B2B, #2E2B2B),
+                linear-gradient(0deg, #F1F3F8, #F1F3F8);
+}
+
+.search-bar {
+    margin: 20px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 5px;
+}
+
+.line-under-search-bar {
+    border-bottom: 1px solid #2E2B2B;
+    margin-top: 5px;
+}
+
+.options {
+    margin: 20px;
+}
+
+.option {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+.option:hover {
+    background-color: #F1F3F8;
+}
+
+
+.bus-icon{
+    position: aboslute;
+    width: 38px;
+    height: 25px;
+
+    top: 5px;
+    left: 10px;;
+    left: 1.19px;
+    right: 7px;
+    transform: translateY(-70%);
+}
+
+.bus-icon img{
+    width: 100%;
+    height: 100%;
+    display: block;
+    
+}
+
