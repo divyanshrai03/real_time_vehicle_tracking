@@ -21,6 +21,7 @@ body {
 .search-bar {
     margin: 20px;
     padding: 10px;
+    height: 35px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
@@ -40,6 +41,8 @@ body {
 
 .options {
     margin: 20px;
+    display: none;
+    align-items: center;
 }
 
 .option {
@@ -54,17 +57,18 @@ body {
     background-color: #F1F3F8;
 }
 
+.search-bar:focus-within + .options{
+    display: block;
+}
 
 .bus-icon{
-    position: aboslute;
-    width: 38px;
-    height: 25px;
+    position: relative;
+    width: 30px;
+    height: 22px;
 
     top: 5px;
-    left: 10px;;
-    left: 1.19px;
-    right: 7px;
-    transform: translateY(-70%);
+    left: 85%;
+    transform: translateY(-110%);
 }
 
 .bus-icon img{
@@ -74,3 +78,34 @@ body {
     
 }
 
+.options .option img{
+    position: relative;
+    padding-right: 15px;
+    height: 18px;
+    top: 2px;
+}
+
+.search-bar input{
+    width: 125px;
+    height:30px;
+    top: 40px;
+    left: 55px;
+    font-family: 'Alike', 'Times New Roman', Times, serif;
+    font-size: 25px;
+    line-height: 37.62px;
+    letter-spacing: 0em;
+    text-align: left;
+    border: black;
+    color: white;
+    padding: 0;
+}
+
+.location{
+    opacity: 60%;
+    background: transparent;
+}
+
+.options{
+    font-family: 'Alike', 'Times New Roman', Times, serif;
+    
+}
