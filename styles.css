@@ -6,16 +6,18 @@ body {
     background-color: #2E2B2B;
 }
 
+#map{
+    z-index: -1;
+}
+
 .container {
     width: 430px;
     height: 300px;
     position: absolute;
     top: 23px;
     left: 31px;
-    border-radius: 20px;
-    border: 1px solid #2E2B2B;
-    background: linear-gradient(0deg, #2E2B2B, #2E2B2B),
-                linear-gradient(0deg, #F1F3F8, #F1F3F8);
+
+
 }
 
 .search-bar {
@@ -108,4 +110,12 @@ body {
 .options{
     font-family: 'Alike', 'Times New Roman', Times, serif;
     
+}
+
+.leaflet-top {
+    bottom: 50px;
+}
+
+.leaflet-left {
+    right: 50px;
 }
