@@ -7,7 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real Time Vehicle Tracking System</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
     <link rel="stylesheet" href="styles.css">
 </head>
 <style>
@@ -27,40 +30,90 @@
         overflow: hidden;
     }
 </style>
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
 </head>
 
 <body>
-    <div id="map"></div>
+    <div id="map"></div> <!---map -->
+
+
     <div id="map-container" class="container">
         <div class="search-bar">
-            <input class="input" type="text" placeholder="Search...">
-            <div class="bus-icon">
-                <img src="bus-icon.png" alt="Bus Icon">
+            <div class="top-bar">
+                <input id="input-t" type="text" placeholder="Search Location" onfocus="edit1()">  <!--- start location-->
+                <div class="bus-icon">
+                    <img id="start" src="img/bus-icon.png" alt="Bus Icon">
+                </div>
             </div>
-            <div class="line-under-search-bar"></div>
-        </div>
-        <div class="options">
-            <div class="option option1"><img src="home.png" alt="">
-                Home<span class="location"> Mandi, Himachal Pradesh</span>
+
+            <div class="bottom-bar">
+                <input id="input-b" type="text" placeholder="Your Destination" onfocus="edit2()">
+                <div class="bus-icon">
+                    <img id="search" src="img/bus-icon.png" alt="Bus Icon">
+                    <img id="destination" src="img/211817_search_strong_icon.png" alt="">
+                </div>
             </div>
-            <div class="option option2"><img src="recent_icon.png" alt="">Chadwick Falls</div>
-            <div class="option option3"><img src="recent_icon.png" alt="">Manali</div>
-            <div class="option option4"><img src="recent_icon.png" alt="">South Himachal</div>
+
+            <div class="option-container" id="optionid">
+                <div class="option" id="home"><img src="img/home.png" alt="">Home<span class="location"> Shimla, Himachal
+                        Pradesh</span></div>
+                <div class="option" id="chadwick"><img src="img/recent_icon.png" alt="">Chadwick Falls</div>
+                <div class="option" id="manali"><img src="img/recent_icon.png" alt="">Manali</div>
+                <div class="option" id="south"><img src="img/recent_icon.png" alt="">South Himachal</div>
+            </div>
+
+            <div class="bus-container" id="busid">
+                <h3>Available buses</h3>
+                <div class="flex-1">
+                    <div class="bus_detail" id="bus1">
+                        <div class="bus_num">
+                            <img src="img/bus-icon.png" alt="">
+                            <h5>A401</h5>
+                        </div>
+                        <div class="bus_time">20 min</div>
+                    </div>
+                    <div class="bus_detail" id="bus2">
+                        <div class="bus_num">
+                            <img src="img/bus-icon.png" alt="">
+                            <h5>A407</h5>
+                        </div>
+                        <div class="bus_time">55 min</div>
+                    </div>
+                </div>
+                <div class="flex-2">
+                    <div class="bus_detail" id="bus3">
+                        <div class="bus_num">
+                            <img src="img/bus-icon.png" alt="">
+                            <h5>A405</h5>
+                        </div>
+                        <div class="bus_time">15 min</div>
+                    </div>
+                    <div class="bus_detail" id="bus4">
+                        <div class="bus_num">
+                            <img src="img/bus-icon.png" alt="">
+                            <h5>A410</h5>
+                        </div>
+                        <div class="bus_time">37 min</div>
+                    </div>
+                </div>
+                
+            </div>
         </div>
     </div>
+    <div class="current" id="current"><img src="img/circle.png" alt=""></div>
 </body>
+
+
 <script>
     // Map initialization
     var map = L.map("map").setView([28.7041, 77.1025], 6);
 
     //osm layer
-    var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    var tileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     });
-    osm.addTo(map);
+    tileLayer.addTo(map);
 
     if (!navigator.geolocation) {
         console.log("Your browser doesn't support geolocation feature!");
@@ -68,14 +121,293 @@
         navigator.geolocation.getCurrentPosition(getPosition);
     }
 
+
+    document.getElementById("current").onclick = function () {
+        navigator.geolocation.getCurrentPosition(getPosition);
+    };
+
+    
+
+
+    let start;
+    let destination;
+    let i;
+    let a=0;
+    let s=0;
+    let write;
+
+    function edit1(params) {
+        write = "input-t";
+    }
+
+    function edit2(params) {
+        write = "input-b";
+    }
+
+
+    let routes_data = {
+
+    }
+
+
+
+    //bus data
+
+    onload = fetch("data/bus_data.csv").then(res=>{
+        return res.text()
+    }).then(data=> {
+        let route = data.split(",");
+        for(let r=0;r<20;r++){
+            let c =1;
+            route[r*7+c];
+        }
+    })
+
+    function bus_time(params) {
+        let k = [];
+        let m=0;
+        onload = fetch("data/bus_data.csv").then(res=>{
+            return res.text()
+        }).then(data=> {
+            let place = data.split(",");
+            let c =6;
+                for(let r=0;r<24;r++){
+                    if(place[r*7+c] == params){
+                        k[m] == place[r*4+5];
+                        m++;
+                    };
+                }
+        })
+
+        return k;
+    }
+
+
+    let routes = {
+        1 : ["Bilaspur bus stand","Local Bus Terminal Bilaspur","Forest Chownk Bus Stop Shamshi","Brahampukhar Bus Stop","Boileauganj Bus Stop","BUS STOP TAMBOL","Bus Stand Chandimandir Shopping Complex","Swarghat Bus Stop","Rajpura Khas Bus Stop","Bus Stop Baner"],
+        2 : ["Brahampukhar Bus Stop","Boileauganj Bus Stop","BUS STOP TAMBOL","Bus Stand Chandimandir Shopping Complex","Swarghat Bus Stop","Rajpura Khas Bus Stop","Bus Stop Baner","Kotla Bus Stop","Kothi Bus Stop","Panjpiri Bus Stop"],
+        3 : ["Bus Stand Chandimandir Shopping Complex","Swarghat Bus Stop","Rajpura Khas Bus Stop","Bus Stop Baner","Kotla Bus Stop","Kothi Bus Stop","Panjpiri Bus Stop","Gambrola Bus Stop","Kallar Bus Stop","Inter State Bus Terminus"],
+        4 : ["Bus Stop Baner","Kotla Bus Stop","Kothi Bus Stop","Panjpiri Bus Stop","Gambrola Bus Stop","Kallar Bus Stop","Shimla Old Bus Stand	Old Bus Stand Rd","Bhanupali Bus Stop","Bilaspur bus stop","New bus stand chamba"],
+        5 : ["Panjpiri Bus Stop","Gambrola Bus Stop","Kallar Bus Stop","Shimla Old Bus Stand","Old Bus Stand Rd","Bhanupali Bus Stop","Bilaspur bus stop","New bus stand chamba","old bus stand & paid parking","Local Bus Stop","Bilaspur bus stand"],
+        6 : ["Shimla Old Bus Stand","Old Bus Stand Rd","Bhanupali Bus Stop","Bilaspur bus stop","New bus stand chamba","old bus stand & paid parking","Local Bus Stop","Bilaspur bus stand","Local Bus Terminal Bilaspur","Forest Chownk Bus Stop Shamshi","Brahampukhar Bus Stop"]
+    }
+
+    let data = {
+        "chamba district" : [32.554444,76.123889,20],
+        "hamirpur district" : [31.633333, 76.516667,20],
+        "home" : [31.1048, 77.1734, 20],
+        "chadwick falls" :[31.1196, 77.1389, 20],
+        "manali" : [32.2432, 77.1892, 20],
+        "south himachal" : [32.1024,  77.5619, 20]
+    }
+
+    
+    document.getElementById("destination").onclick = function () {
+        start = document.getElementById("input-t").value;
+        for(i=0;i<6;i++){
+            if(Object.keys(data)[i]==start.toLowerCase()){
+                s = data[start.toLowerCase()] ;
+                navigator.geolocation.getCurrentPosition(starting_point);
+            }
+        } 
+        
+        destination = document.getElementById("input-b").value;
+        console.log(destination);
+        for(i=0;i<6;i++){
+            if(Object.keys(data)[i]==destination.toLowerCase()){
+                a = data[destination.toLowerCase()] ;
+                navigator.geolocation.getCurrentPosition(destination_point);
+            }
+        } 
+
+        locate([start,destination]);
+        finding_bus([start,destination]);
+    }
+    
+    
+    
+    // data set
+    
+    
+    document.getElementById("home").onclick = function () {
+        //s =[31.1048, 77.1734, 20] ;
+        let ele = document.getElementById(write);
+        ele.value = "home";
+    };
+    document.getElementById("chadwick").onclick = function () {
+        //
+        let ele = document.getElementById(write);
+        ele.value = "chadwick Falls";
+    };
+    document.getElementById("manali").onclick = function () {
+        //s = ;
+        let ele = document.getElementById(write);
+        ele.value = "Manali";
+    };
+    document.getElementById("south").onclick = function () {
+        //s = ;
+        let ele = document.getElementById(write);
+        ele.value = "South Himachal";
+    };
+    
+   
+
+    function locate(para) {
+        onload = fetch("data/places.csv").then(res=>{
+        return res.text()
+    }).then(data=> {
+        let route = data.split(",");
+        for(let r=1;r<25;r++){
+            if(route[r*4+1]==para[0]){
+                s=[route[r*4+2],route[r*4+3],8];
+                console.log("new starting adress" + s);
+            };
+            if(route[r*4+1]==para[1]){
+                console.log("----->"+route[r*4+1] + para[1]);
+                a=[route[r*4+2],route[r*4+3],8];
+                console.log("new destination adress" + a);
+            };
+        }
+        
+    })
+    navigator.geolocation.getCurrentPosition(destination_point);
+    navigator.geolocation.getCurrentPosition(starting_point);
+    }
+
+
+    function finding_bus(params) {
+
+        var today = new Date();
+        var time  = today.getHours()*60*60 + today.getMinutes()*60 + today.getSeconds();
+        console.log("this is my inputs " + params[0] , params[1]);
+        document.getElementById("busid").style.display= "flex";
+        document.getElementById("optionid").style.display= "none";
+
+        for(i=1;i<7;i++){
+            if(routes[i].includes(params[0]) && routes[i].includes(params[1])){
+                let remain = bus_time(i);
+                console.log(remain);
+            };
+
+        }
+            //console.log("they have  " + i + "as common route");
+        }
+
+
+    function destination_point() {
+        goto(a)
+    }
+
+    function starting_point(){
+        dest(s);
+    }
     var marker, circle;
 
+    var taxiIcon = L.icon({
+        iconUrl: 'destination.png',
+        iconSize: [70, 70]
+    })
+
+    const cpos = [];
+
     function getPosition(position) {
-        // console.log(position)
+        console.log("running getposition");
+        console.log( "value of a is "+a);
+        console.log("value of s is "+s);
+        console.log(position)
         var lat = position.coords.latitude;
         var long = position.coords.longitude;
         var accuracy = position.coords.accuracy;
+        // var lat = 31.1048;
+        // var long = 77.1734;
+        // var accuracy = 8;
+        
+        a=[lat,long,accuracy];
 
+        if (marker) {
+            map.removeLayer(marker);
+        }
+        
+        if (circle) {
+            map.removeLayer(circle);
+        }
+        
+        var greenIcon = L.icon({
+            iconUrl: 'img/current.png',
+            
+            iconSize: [50, 50],
+            iconAnchor: [25, 50],
+            
+        });
+        
+        marker = L.marker([lat, long], { icon: greenIcon });
+        circle = L.circle([lat, long], { radius: accuracy });
+        
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map);
+        
+        map.fitBounds(featureGroup.getBounds());
+        
+        console.log("Your coordinate is: Lat: " + lat + " Long: " + long + " Accuracy: " + accuracy);
+    }
+    
+    
+    function dest(position) {
+        console.log("value of a is "+a);
+        console.log("value of s is "+s);
+        console.log("running dest");
+        console.log(position)
+        var lat = position[0];
+        var long = position[1];
+        var accuracy = position[2];
+        // var lat = 31.1048;
+        // var long = 77.1734;
+        // var accuracy = 8;
+        
+        cpos[0] = lat;
+        cpos[1] = long;
+        cpos[2] = accuracy;
+        
+        if (marker) {
+            map.removeLayer(marker);
+        }
+        
+        if (circle) {
+            map.removeLayer(circle);
+        }
+        
+        var greenIcon = L.icon({
+            iconUrl: 'img/current.png',
+            
+            iconSize: [50, 50],
+            iconAnchor: [25, 50],
+            
+        });
+        
+        marker = L.marker([lat, long], { icon: greenIcon });
+        circle = L.circle([lat, long], { radius: accuracy });
+        
+        var featureGroup = L.featureGroup([marker, circle]).addTo(map);
+        
+        map.fitBounds(featureGroup.getBounds());
+        
+        console.log("Your coordinate is: Lat: " + lat + " Long: " + long + " Accuracy: " + accuracy);
+        console.log(cpos[0]);
+        console.log(cpos[1]);
+    }
+    
+    
+    function goto(position) {
+        
+        // console.log(position)
+        console.log("running goto");
+        console.log("value of a is "+a);
+        console.log("value of s is "+s);
+        const event = new Event("start");
+        var lat = position[0];
+        var long = position[1];
+        var accuracy = position[2];
+        console.log(cpos[0] + " " + cpos[1]);
+        
         if (marker) {
             map.removeLayer(marker);
         }
@@ -84,21 +416,41 @@
             map.removeLayer(circle);
         }
 
+        var greenIcon = L.icon({
+            iconUrl: 'destination.png',
+
+            iconSize: [50, 50],
+            iconAnchor: [25, 50],
+
+        });
+
         marker = L.marker([lat, long]);
+
         circle = L.circle([lat, long], { radius: accuracy });
 
         var featureGroup = L.featureGroup([marker, circle]).addTo(map);
 
         map.fitBounds(featureGroup.getBounds());
 
-        console.log(
-            "Your coordinate is: Lat: " +
-            lat +
-            " Long: " +
-            long +
-            " Accuracy: " +
-            accuracy
-        );
+        console.log("Your coordinate is: Lat: " + lat + " Long: " + long + " Accuracy: " + accuracy);
+        
+        console.log(cpos[0]);
+        console.log(cpos[1]);
+        document.addEventListener("start", () => {
+            L.Routing.control({
+                position: 'topleft',
+                waypoints: [L.latLng(s[0], s[1]), L.latLng(a[0], a[1])]
+            }).on('routesfound', function (e) {
+                var routes = e.routes;
+                console.log(routes);
+            }).addTo(map);
+        });
+
+        
+        document.dispatchEvent(event);
     }
+    
+    
 </script>
+
 </html>
